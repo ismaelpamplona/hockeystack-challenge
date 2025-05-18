@@ -41,7 +41,7 @@ const processCompanies = async (domain, hubId, q) => {
     const data = searchResult.results || [];
     totalFound += data.length;
     offsetObject.after = parseInt(searchResult.paging?.next?.after);
-    console.log('fetch company batch');
+    console.log(`[HubSpot] Fetched ${data.length} companies (batch)`);
 
     data.forEach(company => {
       if (!company.properties) return;
@@ -70,7 +70,7 @@ const processCompanies = async (domain, hubId, q) => {
 
   account.lastPulledDates.companies = now;
   await saveDomain(domain);
-  console.log(`Fetched ${totalFound} companies`);
+  console.log(`[HubSpot] Total companies processed: ${totalFound}`);
 };
 
 module.exports = { processCompanies };

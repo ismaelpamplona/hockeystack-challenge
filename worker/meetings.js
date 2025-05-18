@@ -41,6 +41,7 @@ const processMeetings = async (domain, hubId, q) => {
 
     const data = searchResult.results || [];
     totalFound += data.length;
+    console.log(`[HubSpot] Fetched ${data.length} meetings (batch)`);
 
     const meetingIds = data.map(m => m.engagement.id);
     const contactAssoc = await (await hubspotClient.apiRequest({
@@ -62,7 +63,7 @@ const processMeetings = async (domain, hubId, q) => {
       const contactId = meetingToContact[meetingId];
       const email = contactEmails[contactId];
       if (!email) {
-        console.warn(`No email for meeting ${meetingId}, skipping.`);
+        console.warn(`[Warning] Skipped meetingId: ${meetingId} – no email for contactId: ${contactId}`);
         return;
       }
 
@@ -90,7 +91,8 @@ const processMeetings = async (domain, hubId, q) => {
 
   account.lastPulledDates.meetings = now;
   await saveDomain(domain);
-  console.log(`Fetched ${totalFound} meetings`);
+  console.log(`[HubSpot] Total meetings processed: ${totalFound}`);
+
 };
 
 module.exports = { processMeetings };

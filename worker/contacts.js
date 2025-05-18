@@ -46,7 +46,8 @@ const processContacts = async (domain, hubId, q) => {
     const data = searchResult.results || [];
     totalFound += data.length;
     offsetObject.after = parseInt(searchResult.paging?.next?.after);
-    console.log('fetch contact batch');
+
+    console.log(`[HubSpot] Fetched ${data.length} contacts (batch)`);
 
     const contactIds = data.map(c => c.id);
     const assocResults = await (await hubspotClient.apiRequest({
@@ -90,7 +91,7 @@ const processContacts = async (domain, hubId, q) => {
 
   account.lastPulledDates.contacts = now;
   await saveDomain(domain);
-  console.log(`Fetched ${totalFound} contacts`);
+  console.log(`[HubSpot] Total contacts processed: ${totalFound}`);
 };
 
 const fetchContactsByIds = async contactIds => {

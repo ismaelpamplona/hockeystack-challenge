@@ -24,7 +24,7 @@ const normalizePropertyName = key => key.toLowerCase().replace(/__c$/, '').repla
 
 const goal = actions => {
   // this is where the data will be written to the database
-  console.log(actions.length);
+  console.log(`[Goal] Inserting ${actions.length} actions`);
 };
 
 module.exports = {

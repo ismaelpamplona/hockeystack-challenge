@@ -21,7 +21,7 @@ mongoose
     }
   )
   .then(() => {
-    console.log('connected to database');
+    console.log('[Database] Connected successfully.');
     require('./Domain');
 
     // worker setup

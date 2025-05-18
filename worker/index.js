@@ -5,57 +5,62 @@ const { processContacts } = require('./contacts');
 const { processMeetings } = require('./meetings');
 const { saveDomain } = require('./domain');
 const Domain = require('../Domain');
-const _ = require('lodash');
-const { goal } = require('../utils');
 
 const pullDataFromHubspot = async () => {
-  console.log('start pulling data from HubSpot');
+  console.log('[System] Starting HubSpot sync...');
+
   const domain = await Domain.findOne({});
 
   for (const account of domain.integrations.hubspot.accounts) {
-    console.log('start processing account');
+    console.log(`[System] Processing HubSpot account: hubId=${account.hubId}`);
 
     try {
       await refreshAccessToken(domain, account.hubId);
+      console.log('[Auth] Access token refreshed.');
     } catch (err) {
-      console.log(err);
+      console.error('[Auth] Failed to refresh access token:', err);
     }
 
     const actions = [];
     const q = createQueue(domain, actions);
 
     try {
+      console.log(`[HubSpot] Starting contact sync for hubId: ${account.hubId}`);
       await processContacts(domain, account.hubId, q);
-      console.log('process contacts');
+      console.log('[HubSpot] Contact sync completed.');
     } catch (err) {
-      console.log(err);
+      console.error('[HubSpot] Error during contact sync:', err);
     }
 
     try {
+      console.log(`[HubSpot] Starting company sync for hubId: ${account.hubId}`);
       await processCompanies(domain, account.hubId, q);
-      console.log('process companies');
+      console.log('[HubSpot] Company sync completed.');
     } catch (err) {
-      console.log(err);
+      console.error('[HubSpot] Error during company sync:', err);
     }
 
     try {
+      console.log(`[HubSpot] Starting meeting sync for hubId: ${account.hubId}`);
       await processMeetings(domain, account.hubId, q);
-      console.log('process meetings');
+      console.log('[HubSpot] Meeting sync completed.');
     } catch (err) {
-      console.log(err);
+      console.error('[HubSpot] Error during meeting sync:', err);
     }
 
     try {
+      console.log('[Queue] Draining remaining actions...');
       await drainQueue(domain, actions, q);
-      console.log('drain queue');
+      console.log('[Queue] Draining completed.');
     } catch (err) {
-      console.log(err);
+      console.error('[Queue] Error while draining actions:', err);
     }
 
     await saveDomain(domain);
-    console.log('finish processing account');
+    console.log(`[System] Finished processing hubId: ${account.hubId}`);
   }
 
+  console.log('[System] HubSpot sync completed for all accounts.');
   process.exit();
 };
 
