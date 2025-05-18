@@ -4,59 +4,57 @@
 
 ![terminal-screenshot](./Screenshot_20250518_033021.png)
 
-
 ## Debrief
 
-## (1) Code Quality & Readability
-
-- Inconsistent logging improved with contextual tags for traceability.
-- Dense expressions (e.g., expiration date calc) could be split into named constants.
-- Lacks input validation; defensive checks would prevent runtime errors.
-- Some `.then()` usage could be replaced with `async/await` for clarity.
-- Unused variables (e.g., `propertyPrefix`) and sparse comments reduce readability.
-- Repetitive logic across entity functions (`contacts`, `companies`, `meetings`) could be abstracted.
-- `fetchWithPagination()` was proposed to centralize pagination/retry logic.
+### (1) Code Quality & Readability
+- Logging was standardized with contextual tags for better traceability.
+- Dense expressions (e.g., expiration calculation) could be replaced with named constants.
+- Utility functions lack input validation; defensive checks would improve robustness.
+- Some `.then()` chains should be refactored to `async/await` for clarity.
+- Unused variables and minimal commenting reduce code clarity.
+- Functions like `processContacts`, `processCompanies`, and `processMeetings` contain repetitive logic.
+- A helper like `fetchWithPagination()` is suggested to centralize shared patterns.
 
 ### (2) Project Architecture
-
-- All logic is packed into `worker.js`, making the project hard to scale or test.
-- Proposed modular structure (`/entities`, `/shared`) would improve separation of concerns.
-- Shared logic like account lookup and queue flushing should be extracted.
-- Missing tooling like `.nvmrc` and Docker can cause environment mismatches.
-- Node.js version is not pinned (`.nvmrc` or `engines`), which could cause version mismatches; I used Node.js 23.11.0 for this task.
-
+- Original implementation was monolithic (`worker.js`), limiting scalability and testability.
+- Refactored into modular structure (`worker/`) separating concerns by entity.
+- Shared logic (e.g., account lookup, queue management) should be extracted into utilities.
+- Project lacks `.nvmrc` or `package.json > engines` and Docker support, which may lead to environment inconsistencies.
+- Node.js 23.11.0 was used to complete this task.
 
 ### (3) Code Performance
-
-- Original ETL run took 10+ minutes due to incorrect filter operators (`GTQ`, `LTQ`) — fixed by using `GTE`, `LTE`.
-- Meeting ingestion implemented via legacy Engagements API using correct `offset` pagination and `type: MEETING` filtering.
-- Retry logic uses exponential backoff but lacks concurrency, limiting throughput.
-- No caching or request pipelining; batching is only based on size (2000+).
-- Could improve with parallel entity fetches and enforcing 5s timeout per API call (as suggested in the README).
-
+- Original ETL process exceeded 10 minutes due to incorrect date filter operators (`GTQ`, `LTQ`), which were fixed by using `GTE`, `LTE`.
+- Meeting ingestion uses `offset` pagination and filters for `type: MEETING`.
+- Exponential backoff is implemented but concurrency is absent.
+- No caching or pipelining; batching is size-based only.
+- Performance could be improved with concurrent entity fetching and enforcing per-request timeouts.
 
 ## Getting Started
 
-This project requires a newer version of Node. Don't forget to install the NPM packages afterwards.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-You should change the name of the ```.env.example``` file to ```.env```.
+2. Set up the environment:
+   - Rename `.env.example` to `.env`
+   - Fill in required values (e.g., `HUBSPOT_CID`, `HUBSPOT_CS`, `MONGO_URI`)
 
-Run ```node app.js``` to get things started. Hopefully the project should start without any errors.
+3. Run the app:
+   ```bash
+   node app.js
+   ```
 
-## Explanations
+> Ensure Node.js v23.11.0 or higher is used.
 
-The actual task will be explained separately.
+## Project Overview
 
-This is a very simple project that pulls data from HubSpot's CRM API. It pulls and processes company and contact data from HubSpot but does not insert it into the database.
+This project pulls and processes company and contact data from HubSpot's CRM API. Contacts are associated with companies via HubSpot's association API. The system simulates ingestion by building actions in memory without writing to a database. The `Domain` model represents a HockeyStack test account. Only the `hubspot` object in `integrations` is relevant.
 
-In HubSpot, contacts can be part of companies. HubSpot calls this relationship an association. That is, a contact has an association with a company. We make a separate call when processing contacts to fetch this association data.
+The `server.js` file is present but not required for this challenge.
 
-The Domain model is a record signifying a HockeyStack customer. You shouldn't worry about the actual implementation of it. The only important property is the ```hubspot```object in ```integrations```. This is how we know which HubSpot instance to connect to.
-
-The implementation of the server and the ```server.js``` is not important for this project.
-
-Every data source in this project was created for test purposes. If any request takes more than 5 seconds to execute, there is something wrong with the implementation.
+HubSpot requests should complete in under 5 seconds. Longer durations may indicate an implementation issue.
 
 ---
 
-> This project used [ripissue](https://github.com/cwnt-io/ripissue) ([crates.io](https://crates.io/crates/ripissue)) to track and manage the issues directly from the command line.
+> This project used [`ripissue`](https://github.com/cwnt-io/ripissue) to manage issues from the command line.
