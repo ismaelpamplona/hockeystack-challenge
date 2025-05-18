@@ -2,7 +2,14 @@
 
 ## Result
 
-![terminal-screenshot](./Screenshot_20250518_033021.png)
+![terminal-screenshot](./Screenshot_20250518_130358.png)
+
+- [Timer] Contacts sync time spent: 0.642s
+- [Timer] Companies sync time spent: 1.929s
+- [Timer] Meetings sync time spent: 1.128s
+
+> Final run completed in ~5.23s, indicating no request exceeded the 5-second guideline. The sync process ran efficiently and within the expected performance limits.
+
 
 ## Debrief
 
