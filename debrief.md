@@ -16,6 +16,8 @@
 - Proposed modular structure (`/entities`, `/shared`) would improve separation of concerns.
 - Shared logic like account lookup and queue flushing should be extracted.
 - Missing tooling like `.nvmrc` and Docker can cause environment mismatches.
+- Node.js version is not pinned (`.nvmrc` or `engines`), which could cause version mismatches; I used Node.js 23.11.0 for this task.
+
 
 ## (3) Code Performance
 
