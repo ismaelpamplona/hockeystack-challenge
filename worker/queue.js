@@ -7,7 +7,7 @@ const createQueue = (domain, actions) =>
     actions.push(action);
 
     if (actions.length > 2000) {
-        console.log(`[Queue] Inserting ${actions.length} actions into database...`);
+      console.log(`[Queue] Inserting ${actions.length} actions into database...`);
       const copyOfActions = _.cloneDeep(actions);
       actions.splice(0, actions.length);
       goal(copyOfActions);

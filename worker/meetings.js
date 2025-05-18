@@ -92,7 +92,6 @@ const processMeetings = async (domain, hubId, q) => {
   account.lastPulledDates.meetings = now;
   await saveDomain(domain);
   console.log(`[HubSpot] Total meetings processed: ${totalFound}`);
-
 };
 
 module.exports = { processMeetings };
