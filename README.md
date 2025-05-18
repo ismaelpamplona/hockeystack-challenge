@@ -57,3 +57,6 @@ The implementation of the server and the ```server.js``` is not important for th
 
 Every data source in this project was created for test purposes. If any request takes more than 5 seconds to execute, there is something wrong with the implementation.
 
+---
+
+> This project used [ripissue](https://github.com/cwnt-io/ripissue) ([crates.io](https://crates.io/crates/ripissue)) to track and manage the issues directly from the command line.
